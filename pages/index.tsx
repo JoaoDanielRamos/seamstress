@@ -4,22 +4,28 @@ import Image from 'next/image';
 import '../styles/Home.module.scss';
 import styles from '../styles/Home.module.scss';
 import { gsap } from 'gsap';
-
-import femaleModel1 from '../assets/sunglasses-1.jpg';
-import femaleModel2 from '../assets/sunglasses-2.jpg';
-import femaleModel3 from '../assets/sunglasses-3.jpg';
-import femaleModel4 from '../assets/sunglasses-4.jpg';
-
-import maleModel1 from '../assets/sweaters-1.jpg';
-import maleModel2 from '../assets/sweaters-2.jpg';
-import maleModel3 from '../assets/sweaters-3.jpg';
-import maleModel4 from '../assets/sweaters-4.jpg';
 import { useEffect, useRef } from 'react';
-import { time } from 'console';
+
+import sunglasses1 from '../assets/sunglasses-1.jpg';
+import sunglasses2 from '../assets/sunglasses-2.jpg';
+import sunglasses3 from '../assets/sunglasses-3.jpg';
+import sunglasses4 from '../assets/sunglasses-4.jpg';
+
+import sweaters1 from '../assets/sweaters-1.jpg';
+import sweaters2 from '../assets/sweaters-2.jpg';
+import sweaters3 from '../assets/sweaters-3.jpg';
+import sweaters4 from '../assets/sweaters-4.jpg';
+
+import arrowIcon from '../assets/arrow.svg';
 
 const Home: NextPage = () => {
-  let femaleModels = [femaleModel1, femaleModel2, femaleModel3, femaleModel4];
-  let maleModels = [maleModel1, maleModel2, maleModel3, maleModel4];
+  let sunglasses = [
+    sunglasses1,
+    sunglasses2,
+    sunglasses3,
+    sunglasses4,
+  ].reverse();
+  let sweaterss = [sweaters1, sweaters2, sweaters3, sweaters4];
   let zIndex = 10000;
 
   const headerRef = {
@@ -28,12 +34,15 @@ const Home: NextPage = () => {
     h1Spans: useRef([]),
     h2Spans: useRef([]),
   };
-  const { h1Ref, h2Ref, h1Spans, h2Spans } = headerRef;
-
-  const femaleModesRef = {
-    femaleSlides: useRef([]),
+  const sunglassesRef = {
+    sunglassesSlide: useRef([]),
   };
-  const { femaleSlides } = femaleModesRef;
+  const sweatersRef = {
+    sweatersSlide: useRef([]),
+  };
+  const { h1Ref, h2Ref, h1Spans, h2Spans } = headerRef;
+  const { sunglassesSlide } = sunglassesRef;
+  const { sweatersSlide } = sweatersRef;
 
   // Header UseEffect
   useEffect(() => {
@@ -64,13 +73,13 @@ const Home: NextPage = () => {
       });
   }, []);
 
-  // femaleSlides UseEffect
+  // sunglassesSlide UseEffect
   useEffect(() => {
     const timeLine = gsap.timeline();
-    console.log(femaleSlides.current);
+    console.log(sunglassesSlide.current);
 
     // Set all images to the bottom offscreen and rotate them
-    timeLine.set(femaleSlides.current, {
+    timeLine.set(sunglassesSlide.current, {
       x: () => {
         return 250 * Math.random() - 125;
       },
@@ -81,7 +90,43 @@ const Home: NextPage = () => {
     });
 
     // Animate them to the top onscreen
-    femaleSlides.current.forEach((slide, index) => {
+    sunglassesSlide.current.forEach((slide, index) => {
+      timeLine.to(slide, {
+        y: 0,
+        x: 0,
+        stagger: 0.25,
+        duration: 0.4,
+      });
+    });
+
+    // Rotate them one by one
+    timeLine.to(sunglassesSlide.current, {
+      rotate: () => {
+        return 16 * Math.random() - 8;
+      },
+      duration: 0.2,
+      ease: 'linear',
+    });
+  }, []);
+
+  // Sweaters UseEffect
+  useEffect(() => {
+    const timeLine = gsap.timeline();
+    console.log(sunglassesSlide.current);
+
+    // Set all images to the bottom offscreen and rotate them
+    timeLine.set(sweatersSlide.current, {
+      x: () => {
+        return 250 * Math.random() - 125;
+      },
+      y: '500%',
+      rotate: () => {
+        return 90 * Math.random() - 45;
+      },
+    });
+
+    // Animate them to the top onscreen
+    sweatersSlide.current.forEach((slide, index) => {
       timeLine.to(slide, {
         y: 0,
         x: 0,
@@ -90,7 +135,7 @@ const Home: NextPage = () => {
     });
 
     // Rotate them one by one
-    timeLine.to(femaleSlides.current, {
+    timeLine.to(sweatersSlide.current, {
       rotate: () => {
         return 16 * Math.random() - 8;
       },
@@ -133,31 +178,34 @@ const Home: NextPage = () => {
         </h2>
       </header>
 
+      {/* Sunglasses */}
       <section className={styles.section}>
         <div className={`${styles.split} ${styles.gray_background}`}>
           <div className={styles.slides}>
-            {femaleModels.map((image: any, index: any) => (
+            {sunglasses.map((image: any, index: any) => (
               <div
                 className={styles.slidesImageWrapper}
-                style={{ zIndex: zIndex - index }}
+                style={{ zIndex: zIndex + index }}
                 ref={element => {
-                  femaleSlides.current[index] = element;
+                  sunglassesSlide.current[index] = element;
                 }}
                 onClick={event => {
                   let flipTimeLine = gsap.timeline();
                   let target = event.currentTarget;
-                  flipTimeLine.to(target, { x: '200%', rotate: 60 });
-
-                  flipTimeLine.to(target, {
-                    x: '0%',
-                    rotate: () => {
-                      return 16 * Math.random() - 8;
-                    },
-                  });
-
-                  setTimeout(() => {
-                    target.style.zIndex = `${(zIndex -= femaleModels.length)}`;
-                  }, 500);
+                  flipTimeLine
+                    .to(target, {
+                      x: '200%',
+                      rotate: () => {
+                        return Math.floor(Math.random() * 100);
+                      },
+                    })
+                    .set(target, { zIndex: (zIndex -= sunglasses.length) })
+                    .to(target, {
+                      x: '0%',
+                      rotate: () => {
+                        return 16 * Math.random() - 8;
+                      },
+                    });
                 }}
               >
                 <Image layout='responsive' src={image} alt='' />
@@ -168,37 +216,71 @@ const Home: NextPage = () => {
 
         <div className={styles.split}>
           <div className={styles.info}>
-            <h2>Summer Sunnies</h2>
-            <p>
+            <h2 className={styles.info__heading}>Summer Sunnies</h2>
+            <p className={styles.info__text}>
               We jumped on a call with top eyewear designer, Poppy Lu, from her
               home in New York City to discuss what's in and what's not in, for
               this summer's sunglasses look.
+            </p>
+            <p className={styles.info__button}>
+              <a href='#'>
+                Read more <span className={styles.wrapper}></span>
+                <Image
+                  className={styles.arrow}
+                  src={arrowIcon}
+                  layout='fixed'
+                />
+              </a>
             </p>
           </div>
         </div>
       </section>
 
+      {/* sweaters */}
       <section className={styles.section}>
         <div className={styles.split}>
           <div className={styles.info}>
-            <h2>Menswear to swear by</h2>
-            <p>
+            <h2 className={styles.info__heading}>Menswear to swear by</h2>
+            <p className={styles.info__text}>
               Is it too much to hope that we finally could have a tipping point
               in sustainable thinking and climate change? We asked fashion
               designer, Ronen Hill, if this summer's collection will be the most
               eco-friendly ever.
             </p>
+            <p className={styles.info__button}>
+              <a href='#'>
+                Read more <span className={styles.wrapper}></span>
+                <Image
+                  className={styles.arrow}
+                  src={arrowIcon}
+                  layout='fixed'
+                />
+              </a>
+            </p>
           </div>
         </div>
         <div className={`${styles.split} ${styles.gray_background}`}>
           <div className={styles.slides}>
-            {maleModels.map((image: any, index: any) => (
+            {sweaterss.map((image: any, index: any) => (
               <div
                 className={styles.slidesImageWrapper}
                 style={{ zIndex: zIndex - index }}
+                ref={element => {
+                  sweatersSlide.current[index] = element;
+                }}
                 onClick={event => {
-                  event.currentTarget.style.zIndex = `${(zIndex -=
-                    maleModels.length)}`;
+                  let flipTimeLine = gsap.timeline();
+                  let target = event.currentTarget;
+
+                  flipTimeLine
+                    .to(target, { x: '200%', rotate: 30 })
+                    .set(target, { zIndex: (zIndex -= sunglasses.length) })
+                    .to(target, {
+                      x: '0%',
+                      rotate: () => {
+                        return 16 * Math.random() - 8;
+                      },
+                    });
                 }}
               >
                 <Image layout='responsive' src={image} alt='' />
